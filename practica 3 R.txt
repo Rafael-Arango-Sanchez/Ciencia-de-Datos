@@ -1,0 +1,40 @@
+library(tidyverse)
+
+set.seed(2026)
+
+id <- 1:600
+
+tipo_transporte <- sample(c("Terrestre","Aereo"),600,replace=TRUE)
+
+distancia_km <- rnorm(600,mean=800,sd=250)
+
+tiempo_entrega_hrs <- rnorm(600,mean=15,sd=5)
+
+costo <- rnorm(600,mean=5000,sd=1500)
+
+envios <- data.frame(id,tipo_transporte,distancia_km,tiempo_entrega_hrs,costo)
+
+indices <- sample(1:600,40)
+
+envios$distancia_km[indices] <- NA
+
+mediana_distancia <- median(envios$distancia_km,na.rm=TRUE)
+
+
+envios$distancia_km[is.na(envios$distancia_km)] <- mediana_distancia
+
+mean(envios$tiempo_entrega_hrs)
+
+sd(envios$tiempo_entrega_hrs)
+
+cor(envios$distancia_km,envios$tiempo_entrega_hrs,method="pearson")
+
+envios %>% group_by(tipo_transporte) %>% summarise(promedio_tiempo=mean(tiempo_entrega_hrs))
+
+envios %>% group_by(tipo_transporte) %>% summarise(promedio_costo=mean(costo))
+
+t.test(tiempo_entrega_hrs ~ tipo_transporte,data=envios)
+
+ggplot(envios,aes(x=distancia_km,y=tiempo_entrega_hrs,color=tipo_transporte))+geom_point()
+
+ggplot(envios,aes(x=tipo_transporte,y=tiempo_entrega_hrs,fill=tipo_transporte))+geom_boxplot()
